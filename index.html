@@ -20,7 +20,7 @@
             --dark: #343a40;       /* 深色文字 */
             --card-radius: 16px;   /* 卡片圆角 */
             --shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* 阴影 */
-            /* 优化的卡牌默认颜色 */
+            /* 优化的卡牌卡牌默认默认颜色 */
             --default-front: #4361ee; /* 正面-深蓝色 */
             --default-back: #f72585;  /* 背面-深粉色 */
         }
@@ -193,6 +193,21 @@
             justify-content: center;
             font-size: 0.8rem;
             font-weight: bold;
+        }
+
+        /* 长按删除提示 */
+        .deck-delete-hint {
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            right: 0;
+            font-size: 0.7rem;
+            color: #e74c3c;
+            display: none;
+        }
+
+        .deck-item.long-press .deck-delete-hint {
+            display: block;
         }
 
         /* 自定义卡片样式 */
@@ -617,7 +632,11 @@
                     <div class="deck-icon"><i class="fas fa-heart"></i></div>
                     <h3>${deck.name}</h3>
                     <div class="deck-count">${deck.cards.length}</div>
+                    <div class="deck-delete-hint">长按删除</div>
                 `;
+                
+                // 添加长按删除事件
+                addLongPressEvent(deckItem, deck.id);
                 
                 deckList.appendChild(deckItem);
             });
@@ -631,6 +650,103 @@
             `;
             newDeckItem.addEventListener('click', createNewDeck);
             deckList.appendChild(newDeckItem);
+        }
+
+        // 添加长按事件
+        function addLongPressEvent(element, deckId) {
+            let pressTimer = null;
+            
+            // 鼠标/触摸开始
+            element.addEventListener('mousedown', startPress);
+            element.addEventListener('touchstart', startPress);
+            
+            // 鼠标/触摸结束
+            element.addEventListener('mouseup', endPress);
+            element.addEventListener('mouseleave', endPress);
+            element.addEventListener('touchend', endPress);
+            
+            // 点击事件（选择卡组）
+            element.addEventListener('click', function(e) {
+                // 如果是长按后触发的点击，不执行选择操作
+                if (pressTimer !== null) {
+                    e.preventDefault();
+                    return;
+                }
+                
+                selectDeck(deckId);
+            });
+            
+            function startPress(e) {
+                // 阻止触摸事件的默认行为，避免拖动等问题
+                if (e.type === 'touchstart') {
+                    e.preventDefault();
+                }
+                
+                // 清除之前的计时器
+                clearTimeout(pressTimer);
+                
+                // 设置长按计时器（800毫秒）
+                pressTimer = setTimeout(() => {
+                    pressTimer = null; // 标记为长按
+                    element.classList.add('long-press');
+                    
+                    // 显示删除确认
+                    setTimeout(() => {
+                        deleteDeck(deckId);
+                        element.classList.remove('long-press');
+                    }, 300);
+                }, 800);
+            }
+            
+            function endPress() {
+                clearTimeout(pressTimer);
+                pressTimer = null;
+                element.classList.remove('long-press');
+            }
+        }
+
+        // 选择卡组
+        function selectDeck(deckId) {
+            const deck = cardData.decks.find(d => d.id === deckId);
+            if (!deck) return;
+            
+            cardData.currentDeck = deck;
+            
+            document.querySelectorAll('.deck-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`.deck-item[data-id="${deckId}"]`).classList.add('active');
+            
+            updateFormWithCurrentDeck();
+            saveDataToLocalStorage(); // 保存到本地存储
+        }
+
+        // 删除卡组
+        function deleteDeck(deckId) {
+            // 不能删除最后一个卡组
+            if (cardData.decks.length <= 1) {
+                alert('至少保留一个字卡库');
+                return;
+            }
+            
+            const deck = cardData.decks.find(d => d.id === deckId);
+            if (!deck) return;
+            
+            if (confirm(`确定要删除 "${deck.name}" 吗？`)) {
+                // 如果删除的是当前选中的卡组，自动切换到第一个卡组
+                const isCurrentDeck = cardData.currentDeck && cardData.currentDeck.id === deckId;
+                if (isCurrentDeck) {
+                    cardData.currentDeck = cardData.decks[0].id !== deckId ? cardData.decks[0] : cardData.decks[1];
+                }
+                
+                // 从数组中删除卡组
+                cardData.decks = cardData.decks.filter(d => d.id !== deckId);
+                
+                // 更新UI
+                renderDeckList();
+                updateFormWithCurrentDeck();
+                saveDataToLocalStorage(); // 保存到本地存储
+            }
         }
 
         // 更新表单显示当前卡组内容
@@ -725,23 +841,6 @@
                 document.getElementById('result-modal').classList.remove('active');
             });
             
-            // 字卡库选择
-            document.querySelector('.deck-list').addEventListener('click', (e) => {
-                const deckItem = e.target.closest('.deck-item');
-                if (!deckItem || deckItem.querySelector('h3').textContent.includes('新建')) return;
-                
-                const deckId = deckItem.dataset.id;
-                cardData.currentDeck = cardData.decks.find(d => d.id === deckId);
-                
-                document.querySelectorAll('.deck-item').forEach(item => {
-                    item.classList.remove('active');
-                });
-                deckItem.classList.add('active');
-                
-                updateFormWithCurrentDeck();
-                saveDataToLocalStorage(); // 保存到本地存储
-            });
-            
             // 保存按钮
             document.getElementById('save-btn').addEventListener('click', saveDeck);
             
@@ -802,12 +901,7 @@
                 .map(line => line.trim())
                 .filter(line => line);
             
-            if (cards.length === 0) {
-                alert('请输入至少一张字卡');
-                return;
-            }
-            
-            // 更新当前卡组
+            // 允许保存空卡组（解决无法修改空卡组的问题）
             cardData.currentDeck.name = deckName;
             cardData.currentDeck.cards = cards;
             
