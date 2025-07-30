@@ -1,24 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <!-- PWA Meta Tags -->
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#ff5c8d">
-<link rel="manifest" href="/manifest.json">
-
-<!-- iOS 支持 -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-icon" href="icons/icon-192x192.png">
-
-<!-- 注册 Service Worker -->
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/service-worker.js');
-    });
-  }
-</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>次元字卡系统</title>
@@ -32,7 +14,7 @@
         }
 
         :root {
-            --primary: #da3085;    /* 主色-粉色 */
+            --primary: #ff5c8d;    /* 主色-粉色 */
             --secondary: #6a5af9;  /* 辅色-紫色 */
             --light: #f8f9fa;      /* 浅色背景 */
             --dark: #343a40;       /* 深色文字 */
@@ -468,17 +450,6 @@
         }
     </style>
 </head>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      // 路径必须与文件实际位置一致
-      navigator.serviceWorker.register('/service-worker.js')  
-        .then(reg => console.log('Service Worker 注册成功', reg))
-        .catch(err => console.error('Service Worker 注册失败', err));
-    });
-  }
-</script>
-</body>
 <body>
     <div class="container">
         <!-- 核心文案 -->
@@ -582,8 +553,8 @@
     <input type="file" id="back-upload" accept="image/*" style="display: none;">
 
     <script>
-        // 数据存储结构
-        const cardData = {
+        // 数据存储结构 - 从localStorage加载或使用默认值
+        let cardData = JSON.parse(localStorage.getItem('cardData')) || {
             decks: [
                 {
                     id: 'deck1',
@@ -603,6 +574,11 @@
             currentDeck: null
         };
 
+        // 保存数据到localStorage的函数
+        function saveDataToLocalStorage() {
+            localStorage.setItem('cardData', JSON.stringify(cardData));
+        }
+
         // 页面加载时初始化
         document.addEventListener('DOMContentLoaded', function() {
             initApp();
@@ -610,8 +586,10 @@
 
         // 初始化应用
         function initApp() {
-            // 设置默认当前卡组
-            cardData.currentDeck = cardData.decks[0];
+            // 设置默认当前卡组（如果没有）
+            if (!cardData.currentDeck && cardData.decks.length > 0) {
+                cardData.currentDeck = cardData.decks[0];
+            }
             
             // 渲染字卡库列表
             renderDeckList();
@@ -723,6 +701,7 @@
             
             renderDeckList();
             updateFormWithCurrentDeck();
+            saveDataToLocalStorage(); // 保存到本地存储
         }
 
         // 绑定所有事件
@@ -760,6 +739,7 @@
                 deckItem.classList.add('active');
                 
                 updateFormWithCurrentDeck();
+                saveDataToLocalStorage(); // 保存到本地存储
             });
             
             // 保存按钮
@@ -833,6 +813,7 @@
             
             // 更新UI
             renderDeckList();
+            saveDataToLocalStorage(); // 保存到本地存储
             alert(`"${deckName}" 保存成功！`);
         }
 
@@ -844,6 +825,7 @@
                 cardData.currentDeck.cards = [];
                 document.getElementById('card-content').value = '';
                 renderDeckList();
+                saveDataToLocalStorage(); // 保存到本地存储
             }
         }
 
@@ -862,6 +844,7 @@
                     cardData.currentDeck.backImage = event.target.result;
                 }
                 updateCustomPreview();
+                saveDataToLocalStorage(); // 保存到本地存储
             };
             reader.readAsDataURL(file);
             
@@ -879,6 +862,7 @@
                 cardData.currentDeck.backImage = null;
             }
             updateCustomPreview();
+            saveDataToLocalStorage(); // 保存到本地存储
         }
 
         // 抽卡函数（支持多张）
