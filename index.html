@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>爱可以跨越次元</title>
+    <title>次元字卡系统</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -546,6 +546,25 @@
                 gap: 10px;
             }
         }
+        
+        /* 状态提示 */
+        .status-message {
+            text-align: center;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
     </style>
 </head>
 <body>
@@ -603,6 +622,9 @@
                         <p>上传背面图片</p>
                     </div>
                 </div>
+                
+                <!-- 图片上传状态提示 -->
+                <div id="image-status" class="status-message"></div>
                 
                 <!-- 前往抽卡界面的按钮 -->
                 <button id="go-to-draw-btn" class="btn btn-primary nav-btn">
@@ -684,10 +706,45 @@
             };
         }
 
-        // 保存数据到localStorage的函数
+        // 保存数据到localStorage的函数（修复图片保存问题）
         function saveDataToLocalStorage() {
-            localStorage.setItem('cardData', JSON.stringify(cardData));
-            console.log('数据已保存:', cardData);
+            try {
+                // 压缩图片数据（如果存在）
+                if (cardData.currentDeck && cardData.currentDeck.backImage) {
+                    // 创建一个副本，避免修改原始对象
+                    const dataToSave = JSON.parse(JSON.stringify(cardData));
+                    
+                    // 查找当前卡组在decks数组中的索引
+                    const deckIndex = dataToSave.decks.findIndex(d => d.id === dataToSave.currentDeck.id);
+                    
+                    if (deckIndex !== -1) {
+                        // 更新decks数组中的对应卡组
+                        dataToSave.decks[deckIndex] = dataToSave.currentDeck;
+                    }
+                    
+                    localStorage.setItem('cardData', JSON.stringify(dataToSave));
+                } else {
+                    localStorage.setItem('cardData', JSON.stringify(cardData));
+                }
+                console.log('数据已保存:', cardData);
+                showImageStatus('图片保存成功！', 'success');
+            } catch (e) {
+                console.error('保存数据时出错:', e);
+                showImageStatus('保存失败：数据可能过大，请使用较小图片', 'error');
+            }
+        }
+
+        // 显示图片上传状态
+        function showImageStatus(message, type) {
+            const statusEl = document.getElementById('image-status');
+            statusEl.textContent = message;
+            statusEl.className = `status-message status-${type}`;
+            
+            // 5秒后隐藏状态消息
+            setTimeout(() => {
+                statusEl.textContent = '';
+                statusEl.className = 'status-message';
+            }, 5000);
         }
 
         // 页面加载时初始化
@@ -762,7 +819,7 @@
             saveDataToLocalStorage();
         }
 
-        // 删除当前卡组 - 修复后的删除功能
+        // 删除当前卡组
         function deleteCurrentDeck() {
             // 检查是否有选中的卡组
             if (!cardData.currentDeck) {
@@ -860,9 +917,9 @@
             }
         }
 
-        // 绑定所有事件 - 修复了事件绑定问题
+        // 绑定所有事件
         function bindEvents() {
-            // 删除按钮事件 - 使用箭头函数确保正确的上下文
+            // 删除按钮事件
             document.getElementById('delete-deck-btn').addEventListener('click', () => {
                 console.log('点击删除按钮');
                 deleteCurrentDeck();
@@ -874,7 +931,7 @@
                 createNewDeck();
             });
             
-            // 界面跳转：管理 → 抽卡 - 修复了跳转问题
+            // 界面跳转：管理 → 抽卡
             document.getElementById('go-to-draw-btn').addEventListener('click', function() {
                 if (!cardData.currentDeck || cardData.currentDeck.cards.length === 0) {
                     alert('请先添加字卡再抽卡');
@@ -888,7 +945,7 @@
                 document.getElementById('card-display').classList.remove('flipped');
             });
             
-            // 界面跳转：抽卡 → 管理 - 修复了跳转问题
+            // 界面跳转：抽卡 → 管理
             document.getElementById('back-to-manage-btn').addEventListener('click', function() {
                 document.getElementById('draw-section').style.display = 'none';
                 document.getElementById('manage-section').classList.add('active');
@@ -906,7 +963,7 @@
                 document.getElementById('back-upload').click();
             });
             
-            // 文件上传处理
+            // 文件上传处理（修复图片保存问题）
             document.getElementById('back-upload').addEventListener('change', handleImageUpload.bind(null, 'back'));
             
             // 抽卡按钮
@@ -971,12 +1028,24 @@
             }
         }
 
-        // 处理图片上传
+        // 处理图片上传（修复图片保存问题）
         function handleImageUpload(side, e) {
             if (!cardData.currentDeck) return;
             
             const file = e.target.files[0];
             if (!file) return;
+            
+            // 检查文件大小（限制为500KB）
+            if (file.size > 500 * 1024) {
+                showImageStatus('图片过大，请选择小于500KB的图片', 'error');
+                return;
+            }
+            
+            // 检查文件类型
+            if (!file.type.match('image.*')) {
+                showImageStatus('请选择图片文件', 'error');
+                return;
+            }
             
             const reader = new FileReader();
             reader.onload = function(event) {
@@ -985,7 +1054,13 @@
                 }
                 updateCustomPreview();
                 saveDataToLocalStorage();
+                showImageStatus('图片上传成功！', 'success');
             };
+            
+            reader.onerror = function() {
+                showImageStatus('图片读取失败，请重试', 'error');
+            };
+            
             reader.readAsDataURL(file);
             
             // 重置input，允许再次选择同一文件
@@ -1001,6 +1076,7 @@
             }
             updateCustomPreview();
             saveDataToLocalStorage();
+            showImageStatus('已移除自定义图片', 'success');
         }
 
         // 抽卡函数（支持多张）
