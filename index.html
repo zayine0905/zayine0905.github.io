@@ -20,7 +20,6 @@
             --dark: #343a40;       /* 深色文字 */
             --card-radius: 16px;   /* 卡片圆角 */
             --shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* 阴影 */
-            /* 优化的卡牌默认颜色 */
             --default-front: #4361ee; /* 正面-深蓝色 */
             --default-back: #f72585;  /* 背面-深粉色 */
         }
@@ -58,8 +57,8 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            text-align: center;
             justify-content: center;
+            text-align: center;
         }
 
         .card-title i {
@@ -109,7 +108,6 @@
             cursor: pointer;
             border: none;
             transition: all 0.3s ease;
-            text-align: center;
         }
 
         .btn-primary {
@@ -166,28 +164,11 @@
             background-color: #e74c3c;
         }
 
-        /* 按钮容器 - 放在字卡库下方中央 */
+        /* 字卡库操作按钮容器 */
         .deck-controls {
             display: flex;
             justify-content: center;
-            margin: 20px 0 30px; /* 确保在字卡库下方 */
-        }
-
-        /* 抽卡界面按钮组 */
-        .draw-controls {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-            width: 100%;
-            max-width: 400px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .draw-controls .btn-primary {
-            flex-grow: 1;
+            margin: 20px 0 30px;
         }
 
         /* 字卡库列表 */
@@ -195,7 +176,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px;
-            margin-bottom: 10px; /* 减少底部间距，为按钮腾出位置 */
+            margin-bottom: 10px;
         }
 
         .deck-item {
@@ -284,16 +265,16 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
-            overflow: hidden;
+            overflow-y: auto;
             padding: 20px;
-            display: none; /* 初始隐藏 */
+            display: none;
             z-index: 100;
         }
 
         .draw-section-inner {
             max-width: 600px;
             margin: 0 auto;
-            height: 100%;
+            min-height: 100%;
             display: flex;
             flex-direction: column;
         }
@@ -308,7 +289,70 @@
             align-items: center;
         }
 
-        /* 放大卡牌并居中 */
+        /* 抽卡界面按钮组 */
+        .draw-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .draw-controls .btn-primary {
+            flex-grow: 1;
+        }
+
+        /* 新增的输入框区域 */
+        .message-input-container {
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto 40px;
+            display: flex;
+            gap: 10px;
+            padding: 0 15px;
+        }
+
+        .message-input {
+            flex-grow: 1;
+            padding: 14px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 30px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 2px 15px rgba(255, 92, 141, 0.15);
+        }
+
+        .send-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 14px rgba(255, 92, 141, 0.4);
+        }
+
+        .send-btn:hover {
+            background: #ff3d7a;
+            transform: scale(1.05);
+        }
+
+        /* 卡牌样式 */
         .card-display {
             width: 280px;
             height: 400px;
@@ -354,7 +398,6 @@
             text-align: center;
         }
 
-        /* 卡牌默认纯色背景 */
         .card-front {
             background-color: var(--default-front);
             transform: rotateY(180deg);
@@ -364,7 +407,7 @@
             background-color: var(--default-back);
         }
 
-        /* 洗牌按钮 - 小按钮样式 */
+        /* 洗牌按钮 */
         .shuffle-btn {
             width: 50px;
             height: 50px;
@@ -527,26 +570,6 @@
             flex: 1;
         }
 
-        /* 响应式设计 */
-        @media (max-width: 600px) {
-            .deck-list {
-                grid-template-columns: 1fr 1fr;
-            }
-            
-            .header-text {
-                font-size: 1.4rem;
-            }
-            
-            .draw-controls {
-                padding: 0 10px;
-            }
-            
-            .button-group {
-                flex-direction: column;
-                gap: 10px;
-            }
-        }
-        
         /* 状态提示 */
         .status-message {
             text-align: center;
@@ -565,6 +588,22 @@
             background-color: #f8d7da;
             color: #721c24;
         }
+
+        /* 响应式设计 */
+        @media (max-width: 600px) {
+            .deck-list {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .message-input-container {
+                padding: 0 10px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -579,14 +618,12 @@
                     <!-- 字卡库项会通过JS动态生成 -->
                 </div>
                 
-                <!-- 字卡库操作按钮容器 - 放在字卡库下方中央 -->
+                <!-- 字卡库操作按钮容器 -->
                 <div class="deck-controls">
-                    <!-- 新建按钮（圆形小按钮） -->
                     <button id="new-deck-btn" class="round-btn" title="新建字卡库">
                         <i class="fas fa-plus"></i>
                     </button>
                     
-                    <!-- 删除按钮（圆形小按钮） -->
                     <button id="delete-deck-btn" class="round-btn danger" title="删除当前字卡库">
                         <i class="fas fa-trash-alt"></i>
                     </button>
@@ -603,7 +640,7 @@
                     <textarea id="card-content" class="form-control" placeholder="输入字卡内容，每行一个字卡"></textarea>
                 </div>
                 
-                <!-- 按钮组 - 并列放置 -->
+                <!-- 操作按钮组 -->
                 <div class="button-group">
                     <button id="clear-btn" class="btn btn-outline">
                         <i class="fas fa-trash-alt"></i> 清空字卡库
@@ -649,7 +686,7 @@
                             <div class="card-face card-back" id="card-back"></div>
                         </div>
                         
-                        <!-- 三个按钮并列放置 -->
+                        <!-- 抽卡控制按钮 -->
                         <div class="draw-controls">
                             <button id="back-to-manage-btn" class="btn btn-outline btn-icon">
                                 <i class="fas fa-arrow-left"></i>
@@ -663,6 +700,14 @@
                                 <i class="fas fa-sync-alt"></i>
                             </button>
                         </div>
+                    </div>
+                    
+                    <!-- 输入框和发送按钮 -->
+                    <div class="message-input-container">
+                        <input type="text" class="message-input" placeholder="输入信息并发送..." id="message-input">
+                        <button class="send-btn" id="send-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -682,10 +727,10 @@
     <input type="file" id="back-upload" accept="image/*" style="display: none;">
 
     <script>
-        // 数据存储结构 - 从localStorage加载或使用默认值
+        // 数据存储结构
         let cardData = JSON.parse(localStorage.getItem('cardData'));
         
-        // 如果没有本地数据或本地数据损坏，初始化新数据
+        // 初始化数据
         if (!cardData || !cardData.decks) {
             cardData = {
                 decks: [
@@ -706,19 +751,14 @@
             };
         }
 
-        // 保存数据到localStorage的函数（修复图片保存问题）
+        // 保存数据到本地存储
         function saveDataToLocalStorage() {
             try {
-                // 压缩图片数据（如果存在）
                 if (cardData.currentDeck && cardData.currentDeck.backImage) {
-                    // 创建一个副本，避免修改原始对象
                     const dataToSave = JSON.parse(JSON.stringify(cardData));
-                    
-                    // 查找当前卡组在decks数组中的索引
                     const deckIndex = dataToSave.decks.findIndex(d => d.id === dataToSave.currentDeck.id);
                     
                     if (deckIndex !== -1) {
-                        // 更新decks数组中的对应卡组
                         dataToSave.decks[deckIndex] = dataToSave.currentDeck;
                     }
                     
@@ -726,47 +766,37 @@
                 } else {
                     localStorage.setItem('cardData', JSON.stringify(cardData));
                 }
-                console.log('数据已保存:', cardData);
-                showImageStatus('图片保存成功！', 'success');
+                showImageStatus('操作成功', 'success');
             } catch (e) {
                 console.error('保存数据时出错:', e);
-                showImageStatus('保存失败：数据可能过大，请使用较小图片', 'error');
+                showImageStatus('保存失败：数据可能过大', 'error');
             }
         }
 
-        // 显示图片上传状态
+        // 显示状态提示
         function showImageStatus(message, type) {
             const statusEl = document.getElementById('image-status');
             statusEl.textContent = message;
             statusEl.className = `status-message status-${type}`;
             
-            // 5秒后隐藏状态消息
             setTimeout(() => {
                 statusEl.textContent = '';
                 statusEl.className = 'status-message';
-            }, 5000);
+            }, 3000);
         }
 
-        // 页面加载时初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            initApp();
-        });
+        // 页面加载初始化
+        document.addEventListener('DOMContentLoaded', initApp);
 
         // 初始化应用
         function initApp() {
-            // 设置默认当前卡组（如果没有）
+            // 设置默认卡组
             if (!cardData.currentDeck && cardData.decks.length > 0) {
                 cardData.currentDeck = cardData.decks[0];
-                console.log('默认选中卡组:', cardData.currentDeck.name);
             }
             
-            // 渲染字卡库列表
             renderDeckList();
-            
-            // 更新表单显示当前卡组内容
             updateFormWithCurrentDeck();
-            
-            // 绑定事件
             bindEvents();
         }
 
@@ -774,8 +804,6 @@
         function renderDeckList() {
             const deckList = document.querySelector('.deck-list');
             deckList.innerHTML = '';
-            
-            console.log('渲染字卡库列表，当前选中:', cardData.currentDeck?.name);
             
             cardData.decks.forEach(deck => {
                 const isActive = cardData.currentDeck && deck.id === cardData.currentDeck.id;
@@ -790,11 +818,7 @@
                     <div class="deck-count">${deck.cards.length}</div>
                 `;
                 
-                // 点击选择卡组
-                deckItem.addEventListener('click', () => {
-                    selectDeck(deck.id);
-                });
-                
+                deckItem.addEventListener('click', () => selectDeck(deck.id));
                 deckList.appendChild(deckItem);
             });
         }
@@ -802,15 +826,10 @@
         // 选择卡组
         function selectDeck(deckId) {
             const deck = cardData.decks.find(d => d.id === deckId);
-            if (!deck) {
-                console.error('未找到ID为', deckId, '的卡组');
-                return;
-            }
+            if (!deck) return;
             
             cardData.currentDeck = deck;
-            console.log('选中卡组:', deck.name);
             
-            // 更新选中状态
             document.querySelectorAll('.deck-item').forEach(item => {
                 item.classList.toggle('active', item.dataset.id === deckId);
             });
@@ -821,13 +840,11 @@
 
         // 删除当前卡组
         function deleteCurrentDeck() {
-            // 检查是否有选中的卡组
             if (!cardData.currentDeck) {
                 alert('请先选择要删除的字卡库');
                 return;
             }
             
-            // 至少保留一个字卡库
             if (cardData.decks.length <= 1) {
                 alert('至少需要保留一个字卡库');
                 return;
@@ -835,25 +852,10 @@
             
             const deckName = cardData.currentDeck.name;
             if (confirm(`确定要删除 "${deckName}" 字卡库吗？`)) {
-                // 记录当前要删除的卡组ID
                 const deckIdToDelete = cardData.currentDeck.id;
-                
-                // 从数组中删除当前卡组
-                const initialLength = cardData.decks.length;
                 cardData.decks = cardData.decks.filter(d => d.id !== deckIdToDelete);
                 
-                // 验证删除是否成功
-                if (cardData.decks.length === initialLength) {
-                    console.error('删除失败，未找到要删除的卡组');
-                    alert('删除失败，请重试');
-                    return;
-                }
-                
-                // 自动切换到第一个卡组
                 cardData.currentDeck = cardData.decks[0];
-                console.log('删除成功，当前切换到:', cardData.currentDeck.name);
-                
-                // 更新UI
                 renderDeckList();
                 updateFormWithCurrentDeck();
                 saveDataToLocalStorage();
@@ -863,7 +865,7 @@
         // 添加新字卡库
         function createNewDeck() {
             const newDeck = {
-                id: 'deck_' + Date.now(), // 使用时间戳确保ID唯一
+                id: 'deck_' + Date.now(),
                 name: '新建字卡库',
                 cards: [],
                 backImage: null
@@ -871,13 +873,10 @@
             
             cardData.decks.push(newDeck);
             cardData.currentDeck = newDeck;
-            console.log('创建新字卡库:', newDeck.name);
             
             renderDeckList();
             updateFormWithCurrentDeck();
             saveDataToLocalStorage();
-            
-            // 自动聚焦到名称输入框，方便用户修改
             document.getElementById('deck-name').focus();
         }
 
@@ -885,11 +884,8 @@
         function updateFormWithCurrentDeck() {
             if (!cardData.currentDeck) return;
             
-            console.log('更新表单内容:', cardData.currentDeck.name);
             document.getElementById('deck-name').value = cardData.currentDeck.name;
             document.getElementById('card-content').value = cardData.currentDeck.cards.join('\n');
-            
-            // 更新自定义预览
             updateCustomPreview();
         }
 
@@ -898,7 +894,6 @@
             const deck = cardData.currentDeck;
             if (!deck) return;
             
-            // 背面预览
             const backCard = document.querySelector('#custom-back');
             if (deck.backImage) {
                 backCard.innerHTML = `
@@ -919,73 +914,63 @@
 
         // 绑定所有事件
         function bindEvents() {
-            // 删除按钮事件
-            document.getElementById('delete-deck-btn').addEventListener('click', () => {
-                console.log('点击删除按钮');
-                deleteCurrentDeck();
-            });
+            // 字卡库管理事件
+            document.getElementById('delete-deck-btn').addEventListener('click', deleteCurrentDeck);
+            document.getElementById('new-deck-btn').addEventListener('click', createNewDeck);
             
-            // 添加新字卡库按钮
-            document.getElementById('new-deck-btn').addEventListener('click', () => {
-                console.log('点击新建按钮');
-                createNewDeck();
-            });
-            
-            // 界面跳转：管理 → 抽卡
-            document.getElementById('go-to-draw-btn').addEventListener('click', function() {
+            // 界面切换事件
+            document.getElementById('go-to-draw-btn').addEventListener('click', () => {
                 if (!cardData.currentDeck || cardData.currentDeck.cards.length === 0) {
                     alert('请先添加字卡再抽卡');
                     return;
                 }
-                
                 document.getElementById('manage-section').classList.remove('active');
                 document.getElementById('draw-section').style.display = 'block';
-                
-                // 重置抽卡结果和卡片状态
                 document.getElementById('card-display').classList.remove('flipped');
             });
             
-            // 界面跳转：抽卡 → 管理
-            document.getElementById('back-to-manage-btn').addEventListener('click', function() {
+            document.getElementById('back-to-manage-btn').addEventListener('click', () => {
                 document.getElementById('draw-section').style.display = 'none';
                 document.getElementById('manage-section').classList.add('active');
                 document.getElementById('result-modal').classList.remove('active');
             });
             
-            // 保存按钮
+            // 表单操作事件
             document.getElementById('save-btn').addEventListener('click', saveDeck);
-            
-            // 清空按钮
             document.getElementById('clear-btn').addEventListener('click', clearDeck);
             
-            // 自定义背面
+            // 图片上传事件
             document.getElementById('custom-back').addEventListener('click', () => {
                 document.getElementById('back-upload').click();
             });
             
-            // 文件上传处理（修复图片保存问题）
             document.getElementById('back-upload').addEventListener('change', handleImageUpload.bind(null, 'back'));
             
-            // 抽卡按钮
+            // 抽卡相关事件
             document.getElementById('draw-btn').addEventListener('click', drawCards);
+            document.getElementById('send-btn').addEventListener('click', () => {
+                drawCards();
+                document.getElementById('message-input').value = '';
+            });
             
-            // 洗牌按钮
+            // 输入框回车事件
+            document.getElementById('message-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    drawCards();
+                    e.target.value = '';
+                }
+            });
+            
             document.getElementById('shuffle-btn').addEventListener('click', shuffleCard);
-            
-            // 关闭弹窗按钮
             document.getElementById('close-modal').addEventListener('click', () => {
                 document.getElementById('result-modal').classList.remove('active');
             });
             
-            // 限制抽卡数量
+            // 抽卡数量限制
             document.getElementById('draw-count').addEventListener('input', function() {
                 const maxCount = Math.min(cardData.currentDeck?.cards.length || 1, 10);
-                if (parseInt(this.value) > maxCount) {
-                    this.value = maxCount;
-                }
-                if (parseInt(this.value) < 1) {
-                    this.value = 1;
-                }
+                if (parseInt(this.value) > maxCount) this.value = maxCount;
+                if (parseInt(this.value) < 1) this.value = 1;
             });
         }
 
@@ -1001,16 +986,13 @@
                 return;
             }
             
-            // 过滤空行
             const cards = cardContent.split('\n')
                 .map(line => line.trim())
                 .filter(line => line);
             
-            // 允许保存空卡组
             cardData.currentDeck.name = deckName;
             cardData.currentDeck.cards = cards;
             
-            // 更新UI
             renderDeckList();
             saveDataToLocalStorage();
             alert(`"${deckName}" 保存成功！`);
@@ -1028,20 +1010,19 @@
             }
         }
 
-        // 处理图片上传（修复图片保存问题）
+        // 处理图片上传
         function handleImageUpload(side, e) {
             if (!cardData.currentDeck) return;
             
             const file = e.target.files[0];
             if (!file) return;
             
-            // 检查文件大小（限制为500KB）
+            // 限制图片大小
             if (file.size > 500 * 1024) {
                 showImageStatus('图片过大，请选择小于500KB的图片', 'error');
                 return;
             }
             
-            // 检查文件类型
             if (!file.type.match('image.*')) {
                 showImageStatus('请选择图片文件', 'error');
                 return;
@@ -1054,16 +1035,11 @@
                 }
                 updateCustomPreview();
                 saveDataToLocalStorage();
-                showImageStatus('图片上传成功！', 'success');
+                showImageStatus('图片上传成功', 'success');
             };
             
-            reader.onerror = function() {
-                showImageStatus('图片读取失败，请重试', 'error');
-            };
-            
+            reader.onerror = () => showImageStatus('图片读取失败，请重试', 'error');
             reader.readAsDataURL(file);
-            
-            // 重置input，允许再次选择同一文件
             e.target.value = '';
         }
 
@@ -1079,17 +1055,14 @@
             showImageStatus('已移除自定义图片', 'success');
         }
 
-        // 抽卡函数（支持多张）
+        // 抽卡函数
         function drawCards() {
-            const cardDisplay = document.getElementById('card-display');
             const cardFront = document.getElementById('card-front');
             const modalCards = document.getElementById('modal-cards');
             const drawCount = parseInt(document.getElementById('draw-count').value) || 1;
             
-            // 清空之前的结果
             modalCards.innerHTML = '';
             
-            // 验证抽卡数量
             if (drawCount < 1 || drawCount > 10) {
                 alert('抽卡数量必须在1-10之间');
                 return;
@@ -1100,23 +1073,17 @@
                 return;
             }
             
-            // 限制最大抽卡数量为字卡总数
             const actualCount = Math.min(drawCount, cardData.currentDeck.cards.length);
-            
-            // 随机抽取卡牌
             const results = [];
+            
             for (let i = 0; i < actualCount; i++) {
                 const randomIndex = Math.floor(Math.random() * cardData.currentDeck.cards.length);
                 results.push(cardData.currentDeck.cards[randomIndex]);
             }
 
-            // 显示最后一张抽卡动画
             showCardAnimation(results[results.length - 1]);
             
-            // 弹窗展示所有结果
-            setTimeout(() => {
-                openResultModal(results);
-            }, 800);
+            setTimeout(() => openResultModal(results), 800);
         }
 
         // 卡牌翻转动画
@@ -1126,15 +1093,10 @@
             const cardBack = document.getElementById('card-back');
             const deck = cardData.currentDeck;
             
-            // 更新卡片正面内容
             cardFront.textContent = text;
-            
-            // 应用默认正面样式
             cardFront.style.backgroundImage = 'none';
             cardFront.style.backgroundColor = 'var(--default-front)';
-            cardFront.style.textShadow = 'none';
             
-            // 应用自定义背面图片
             if (deck.backImage) {
                 cardBack.style.backgroundImage = `url(${deck.backImage})`;
                 cardBack.style.backgroundColor = 'transparent';
@@ -1143,11 +1105,8 @@
                 cardBack.style.backgroundColor = 'var(--default-back)';
             }
             
-            // 翻转动画
             cardDisplay.classList.remove('flipped');
-            setTimeout(() => {
-                cardDisplay.classList.add('flipped');
-            }, 200);
+            setTimeout(() => cardDisplay.classList.add('flipped'), 200);
         }
 
         // 洗牌动画
@@ -1155,37 +1114,27 @@
             const cardDisplay = document.getElementById('card-display');
             const shuffleBtn = document.getElementById('shuffle-btn');
             
-            // 重置翻转状态
             cardDisplay.classList.remove('flipped');
-            
-            // 添加洗牌动画
             shuffleBtn.style.transform = 'rotate(360deg)';
-            setTimeout(() => {
-                shuffleBtn.style.transform = 'rotate(0deg)';
-            }, 500);
+            setTimeout(() => shuffleBtn.style.transform = 'rotate(0deg)', 500);
         }
 
         // 结果弹窗
         function openResultModal(cards) {
             const modalCards = document.getElementById('modal-cards');
-            const deck = cardData.currentDeck;
             
             cards.forEach(text => {
                 const card = document.createElement('div');
                 card.className = 'modal-card';
                 card.textContent = text;
-                
-                // 应用默认样式
                 card.style.backgroundColor = 'var(--default-front)';
-                card.style.backgroundImage = 'none';
-                
                 modalCards.appendChild(card);
             });
             
             document.getElementById('result-modal').classList.add('active');
         }
         
-        // 将函数暴露给全局作用域
+        // 暴露函数到全局
         window.removeCustomImage = removeCustomImage;
     </script>
 </body>
